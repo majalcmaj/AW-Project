@@ -15,6 +15,7 @@ typedef struct {
     int height;
 } rgb_image;
 
+void image_alloc(rgb_image* image, int width, int height);
 int image_read(const char *filename, rgb_image *image);
 int image_write(const char* filename, rgb_image image);
 void image_dispose(rgb_image image);

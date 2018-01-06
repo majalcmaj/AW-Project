@@ -7,6 +7,18 @@
 #include "../libs/stb_image_write.h"
 #define CHANNELS_COUNT 4
 
+void image_alloc(rgb_image *image, int width, int height)
+{
+    image->width = width;
+    image->height = height;
+    int pixels_count = width * height;
+
+    image->r_channel = (byte *)malloc(sizeof(byte) * pixels_count);
+    image->g_channel = (byte *)malloc(sizeof(byte) * pixels_count);
+    image->b_channel = (byte *)malloc(sizeof(byte) * pixels_count);
+    image->alpha_channel = (byte *)malloc(sizeof(byte) * pixels_count);
+}
+
 int image_read(const char *filename, rgb_image *image)
 {
     int width, height, channels_count, pixels_count;
@@ -19,15 +31,8 @@ int image_read(const char *filename, rgb_image *image)
     {
         return RESULT_WRONG_CHANNELS_COUNT;
     }
-    image->width = width;
-    image->height = height;
+    image_alloc(image, width, height);
     pixels_count = width * height;
-
-    image->r_channel = (byte *)malloc(sizeof(byte) * pixels_count);
-    image->g_channel = (byte *)malloc(sizeof(byte) * pixels_count);
-    image->b_channel = (byte *)malloc(sizeof(byte) * pixels_count);
-    image->alpha_channel = (byte *)malloc(sizeof(byte) * pixels_count);
-
     for (int i = 0; i < pixels_count; i++)
     {
         image->r_channel[i] = data[i * CHANNELS_COUNT];
