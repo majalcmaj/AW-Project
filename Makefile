@@ -3,7 +3,7 @@ CFLAGS=-Wall -g3
 LDFLAGS=-lm
 SRC_DIR=src
 BUILD_DIR=build
-BUILD_FILES=main io_helpers/io_helpers
+BUILD_FILES=main io_helpers/io_helpers img_transform/common img_transform/img_transform_serial
 BUILD_FILES_PATHS=$(shell for WORD in $(BUILD_FILES); do echo $(BUILD_DIR)/$(SRC_DIR)/$${WORD}.o;done)
 
 
