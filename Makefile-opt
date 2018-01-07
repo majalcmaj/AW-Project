@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -g3 --std=c99
+CFLAGS=-Wall -O2 --std=c99
 LDFLAGS=-lm
 SRC_DIR=src
 BUILD_DIR=build
