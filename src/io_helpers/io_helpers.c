@@ -1,6 +1,7 @@
 #include <stdlib.h>
-
+#include <stdio.h>
 #include "io_helpers.h"
+#define STBI_FAILURE_USERMSG 
 #define STB_IMAGE_IMPLEMENTATION
 #include "../libs/stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -25,6 +26,7 @@ int image_read(const char *filename, rgb_image *image)
     byte *data = stbi_load(filename, &width, &height, &channels_count, CHANNELS_COUNT);
     if (data == NULL)
     {
+        fprintf(stdout, stbi_failure_reason());
         return RESULT_CANNOT_READ;
     }
     if (channels_count != CHANNELS_COUNT)
