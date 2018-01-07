@@ -44,5 +44,5 @@ int main(int argc, const char** argv)
     } else if(argc == 5) {
         time = perform_scaling(argv[2], argv[4], scaling_fun, atoi(argv[3]));
     }
-    printf("%lf\n", time);
+    printf("%lf", time);
 }

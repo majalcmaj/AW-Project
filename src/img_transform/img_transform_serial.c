@@ -1,6 +1,6 @@
 #include<stdlib.h>
 #include"common.h"
-#include <time.h>
+#include <sys/time.h>
 
 static void resize_channel(byte* input, byte* output, int w, int h, int scale_factor) {
     double kernel[4][4], kernel2[4][4], kernel3[4][4], kernel4[4][4];
@@ -67,18 +67,18 @@ static void resize_channel(byte* input, byte* output, int w, int h, int scale_fa
 
 double run_scaling_serial(rgb_image* input, rgb_image* output, int factor)
 {
-    clock_t start, end;
-
+    struct timeval tv_begin;
+    struct timeval tv_end;
+    gettimeofday(&tv_begin,NULL);
     image_alloc(output, input->width * factor, input->height * factor);
-    start = clock();
 
     resize_channel(input->r_channel, output->r_channel, input->width, input->height, factor);
     resize_channel(input->g_channel, output->g_channel, input->width, input->height, factor);
     resize_channel(input->b_channel, output->b_channel, input->width, input->height, factor);
     resize_channel(input->alpha_channel, output->alpha_channel, input->width, input->height, factor);
-    
-    end = clock();
-    return ((double) (end - start)) / CLOCKS_PER_SEC;
+
+    gettimeofday(&tv_end,NULL);
+    return tv_end.tv_sec-tv_begin.tv_sec + (tv_end.tv_usec-tv_begin.tv_usec) / 1000000.0;
 }
 
 
