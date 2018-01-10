@@ -1,9 +1,9 @@
 CC=gcc
-CFLAGS=-Wall -g3 --std=c99
-LDFLAGS=-lm
+CFLAGS=-Wall -g3 --std=c99 -fopenmp
+LDFLAGS=-lm -fopenmp
 SRC_DIR=src
 BUILD_DIR=build
-BUILD_FILES=main io_helpers/io_helpers img_transform/common img_transform/img_transform_serial
+BUILD_FILES=main io_helpers/io_helpers img_transform/common img_transform/img_transform_serial img_transform/img_transform_parallel
 BUILD_FILES_PATHS=$(shell for WORD in $(BUILD_FILES); do echo $(BUILD_DIR)/$(SRC_DIR)/$${WORD}.o;done)
 
 

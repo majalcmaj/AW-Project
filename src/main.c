@@ -4,6 +4,7 @@
 #include <math.h>
 #include "io_helpers/io_helpers.h"
 #include "img_transform/img_transform_serial.h"
+#include "img_transform/img_transform_parallel.h"
 
 double perform_scaling(const char* input_path, const char* output_path, double (*resize_function)(rgb_image*, rgb_image*, int), int scaling_factor) {
     double time;
@@ -36,8 +37,11 @@ int main(int argc, const char** argv)
 
     if(strcmp(argv[1], "SERIAL") == 0) {
         scaling_fun = &run_scaling_serial;
+    } else if(strcmp(argv[1], "PARALLEL") == 0) {
+        scaling_fun = &run_scaling_parallel;
     } else {
-        fprintf(stderr, "Wrong function, currently supported: SERIAL");
+        fprintf(stderr, "Wrong function, currently supported: SERIAL, PARALLEL");
+        exit(1);
     }
     if(argc == 4) {
         time = perform_scaling(argv[2], NULL, scaling_fun, atoi(argv[3]));
