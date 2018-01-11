@@ -47,7 +47,6 @@ static void resize_channel(byte* input, byte* output, int w, int h, int scale_fa
                 }
             }
         }
-
 #pragma omp for
         for(j = 1 ; j < h - 2 ; j ++) {
             fill_left_edge_kernel(kernel, input, w, j);
@@ -60,7 +59,6 @@ static void resize_channel(byte* input, byte* output, int w, int h, int scale_fa
                 }
             }
         }
-
 #pragma omp for
         for(int counter = 0 ; counter < middle_area; counter++) {
             i = counter / mid_w + 1;

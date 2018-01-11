@@ -1,11 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "io_helpers.h"
-#define STBI_FAILURE_USERMSG 
-#define STB_IMAGE_IMPLEMENTATION
-#include "../libs/stb_image.h"
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "../libs/stb_image_write.h"
+#include <errno.h>
 #define CHANNELS_COUNT 4
 
 void image_alloc(rgb_image *image, int width, int height)
@@ -20,46 +16,71 @@ void image_alloc(rgb_image *image, int width, int height)
     image->alpha_channel = (byte *)malloc(sizeof(byte) * pixels_count);
 }
 
+static int read_binary(FILE* infile, rgb_image* image)
+{
+    int fnres;
+    int width, height;
+    fnres = fread(&width, sizeof(int), 1, infile);
+    if(fnres != 1) return 4;
+    fnres = fread(&height, sizeof(int), 1, infile);
+    if(fnres != 1) return 5; 
+    int px_count = width * height;
+    image_alloc(image, width, height);
+    fnres = fread(image->r_channel, sizeof(byte), px_count, infile);
+    if(fnres != px_count) return 6;
+    fnres = fread(image->g_channel, sizeof(byte), px_count, infile);
+    if(fnres != px_count) return 7;
+    fnres = fread(image->b_channel, sizeof(byte), px_count, infile);
+    if(fnres != px_count) return 8;
+    fnres = fread(image->alpha_channel, sizeof(byte), px_count, infile);
+    if(fnres != px_count) return 9;
+    return 0;
+}
+
+
 int image_read(const char *filename, rgb_image *image)
 {
-    int width, height, channels_count, pixels_count;
-    byte *data = stbi_load(filename, &width, &height, &channels_count, CHANNELS_COUNT);
-    if (data == NULL)
+    int result;
+    FILE* infile = fopen(filename, "rb");
+    if (infile == NULL)
     {
-        fprintf(stdout, stbi_failure_reason());
+        fprintf(stdout, "Cannot read file, errno: %d", errno);
         return RESULT_CANNOT_READ;
     }
-    if (channels_count != CHANNELS_COUNT)
-    {
-        return RESULT_WRONG_CHANNELS_COUNT;
-    }
-    image_alloc(image, width, height);
-    pixels_count = width * height;
-    for (int i = 0; i < pixels_count; i++)
-    {
-        image->r_channel[i] = data[i * CHANNELS_COUNT];
-        image->g_channel[i] = data[i * CHANNELS_COUNT + 1];
-        image->b_channel[i] = data[i * CHANNELS_COUNT + 2];
-        image->alpha_channel[i] = data[i * CHANNELS_COUNT + 3];
-    }
-    free(data);
+    result = read_binary(infile, image);
+    return result;
+}
+
+int write_binary(FILE* outfile, rgb_image* image)
+{
+    int px_count = image->width * image->height;
+    int fnres = fwrite(&image->width, sizeof(int), 1, outfile);
+    if(fnres != 1) return 3;
+    fnres = fwrite(&image->height, sizeof(int), 1, outfile);
+    if(fnres != 1) return 4;
+    fnres = fwrite(image->r_channel, sizeof(byte), px_count, outfile);
+    if(fnres != px_count) return 5;
+    fnres = fwrite(image->g_channel, sizeof(byte), px_count, outfile);
+    if(fnres != px_count) return 6;
+    fnres = fwrite(image->b_channel, sizeof(byte), px_count, outfile);
+    if(fnres != px_count) return 7;
+    fnres = fwrite(image->alpha_channel, sizeof(byte), px_count, outfile);
+    if(fnres != px_count) return 8;
     return 0;
 }
 
 int image_write(const char *filename, rgb_image image)
 {
-    int pixels_count = image.width * image.height;
-    byte *data = (byte *)malloc(sizeof(byte) * pixels_count * CHANNELS_COUNT);
-    for (int i = 0; i < pixels_count; i++)
+    int res = 0;
+    FILE* outfile = fopen(filename, "wb");
+    if(outfile == NULL)
     {
-        data[i * CHANNELS_COUNT] = image.r_channel[i];
-        data[i * CHANNELS_COUNT + 1] = image.g_channel[i];
-        data[i * CHANNELS_COUNT + 2] = image.b_channel[i];
-        data[i * CHANNELS_COUNT + 3] = image.alpha_channel[i];
+        fprintf(stderr, "Could not open output file '%s', errno %d\n", filename, errno);
+        return 2;
     }
-    int result = stbi_write_png(filename, image.width, image.height, CHANNELS_COUNT, data, 0);
-    free(data);
-    return result;
+    res = write_binary(outfile, &image);
+    fclose(outfile);
+    return res;
 }
 void image_dispose(rgb_image image)
 {
