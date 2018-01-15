@@ -20,7 +20,9 @@ int perform_scaling(const char* input_path, const char* output_path, int (*resiz
         image_write(output_path, output);
     }
     image_dispose(image);
-    image_dispose(output);
+    if(result == 0) {
+        image_dispose(output);
+    }
     return result;
 }
 

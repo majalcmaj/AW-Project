@@ -15,6 +15,8 @@ int image_alloc(rgb_image *image, int width, int height)
     image->b_channel = (byte *)malloc(sizeof(byte) * pixels_count);
     image->alpha_channel = (byte *)malloc(sizeof(byte) * pixels_count);
 
+    printf("%X %X %X %X %d", image->r_channel, image->g_channel, image->b_channel, image->alpha_channel, pixels_count);
+
     if(image->r_channel == NULL || image->g_channel == NULL || image->b_channel == NULL || image->alpha_channel == NULL )
     {
         return 100;
