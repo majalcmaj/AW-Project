@@ -68,7 +68,7 @@ static void resize_channel(byte* input, byte* output, int w, int h, int scale_fa
     }
 }
 
-double run_scaling_serial(rgb_image* input, rgb_image* output, int factor)
+int run_scaling_serial(rgb_image* input, rgb_image* output, int factor, double* time)
 {
     struct timeval tv_begin;
     struct timeval tv_end;
@@ -81,7 +81,8 @@ double run_scaling_serial(rgb_image* input, rgb_image* output, int factor)
     resize_channel(input->alpha_channel, output->alpha_channel, input->width, input->height, factor);
 
     gettimeofday(&tv_end,NULL);
-    return tv_end.tv_sec-tv_begin.tv_sec + (tv_end.tv_usec-tv_begin.tv_usec) / 1000000.0;
+    *time = tv_end.tv_sec-tv_begin.tv_sec + (tv_end.tv_usec-tv_begin.tv_usec) / 1000000.0;
+    return 0;
 }
 
 

@@ -74,23 +74,27 @@ static void resize_channel(byte* input, byte* output, int w, int h, int scale_fa
     }
 }
 
-double run_scaling_parallel(rgb_image* input, rgb_image* output, int factor, double* time)
+int run_scaling_parallel_memsave(rgb_image* input, rgb_image* output_, int factor, double* time)
 {
     struct timeval tv_begin;
     struct timeval tv_end;
-    int allocResult = image_alloc(output, input->width * factor, input->height * factor);
-    
-    if(allocResult != 0) {
+
+    byte* output = (byte*)malloc(sizeof(byte) * input->width * factor * input->height * factor);
+
+    if(output == NULL) {
         return 100;
     }
 
     gettimeofday(&tv_begin,NULL);
-    resize_channel(input->r_channel, output->r_channel, input->width, input->height, factor);
-    resize_channel(input->g_channel, output->g_channel, input->width, input->height, factor);
-    resize_channel(input->b_channel, output->b_channel, input->width, input->height, factor);
-    resize_channel(input->alpha_channel, output->alpha_channel, input->width, input->height, factor);
-
+    resize_channel(input->r_channel, output, input->width, input->height, factor);
+    resize_channel(input->g_channel, output, input->width, input->height, factor);
+    resize_channel(input->b_channel, output, input->width, input->height, factor);
+    resize_channel(input->alpha_channel, output, input->width, input->height, factor);
     gettimeofday(&tv_end,NULL);
+    
+    free(output);
     *time = tv_end.tv_sec-tv_begin.tv_sec + (tv_end.tv_usec-tv_begin.tv_usec) / 1000000.0;
     return 0;
 }
+
+

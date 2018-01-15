@@ -4,7 +4,7 @@
 #include <errno.h>
 #define CHANNELS_COUNT 4
 
-void image_alloc(rgb_image *image, int width, int height)
+int image_alloc(rgb_image *image, int width, int height)
 {
     image->width = width;
     image->height = height;
@@ -14,6 +14,13 @@ void image_alloc(rgb_image *image, int width, int height)
     image->g_channel = (byte *)malloc(sizeof(byte) * pixels_count);
     image->b_channel = (byte *)malloc(sizeof(byte) * pixels_count);
     image->alpha_channel = (byte *)malloc(sizeof(byte) * pixels_count);
+
+    if(image->r_channel == NULL || image->g_channel == NULL || image->b_channel == NULL || image->alpha_channel == NULL )
+    {
+        return 100;
+    } else {
+        return 0;
+    }
 }
 
 static int read_binary(FILE* infile, rgb_image* image)
